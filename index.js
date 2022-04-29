@@ -26,6 +26,14 @@ async function run() {
       const result = await itemsCollection.insertOne(item);
       res.send(result);
     });
+
+    app.get("/item", async (req, res) => {
+      const userEmail = req.query.email;
+      const query = { creater: userEmail };
+      const cursor = itemsCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
   } finally {
   }
 }
