@@ -21,6 +21,20 @@ async function run() {
     await client.connect();
     const itemsCollection = client.db("techArchive").collection("items");
 
+    app.get("/items", async (req, res) => {
+      const numberOfItem = parseInt(req.query.number);
+      console.log(numberOfItem);
+      let cursor;
+      const query = {};
+      if (numberOfItem) {
+        cursor = itemsCollection.find(query).limit(numberOfItem);
+      } else {
+        cursor = itemsCollection.find(query);
+      }
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     app.post("/item", async (req, res) => {
       const item = req.body;
       const result = await itemsCollection.insertOne(item);
