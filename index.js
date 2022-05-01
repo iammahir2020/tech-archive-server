@@ -40,6 +40,18 @@ async function run() {
       res.send(result);
     });
 
+    app.put("/item", async (req, res) => {
+      const { newQuantity, id } = req.body;
+      const filter = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          quantity: newQuantity,
+        },
+      };
+      const result = await itemsCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
     app.get("/item", async (req, res) => {
       const userEmail = req.query.email;
       const itemID = req.query.id;
