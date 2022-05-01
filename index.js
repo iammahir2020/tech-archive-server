@@ -23,7 +23,6 @@ async function run() {
 
     app.get("/items", async (req, res) => {
       const numberOfItem = parseInt(req.query.number);
-      console.log(numberOfItem);
       let cursor;
       const query = {};
       if (numberOfItem) {
@@ -43,9 +42,18 @@ async function run() {
 
     app.get("/item", async (req, res) => {
       const userEmail = req.query.email;
-      const query = { creater: userEmail };
-      const cursor = itemsCollection.find(query);
-      const result = await cursor.toArray();
+      const itemID = req.query.id;
+      let query;
+      let result;
+      if (userEmail) {
+        query = { creater: userEmail };
+        const cursor = itemsCollection.find(query);
+        result = await cursor.toArray();
+      }
+      if (itemID) {
+        query = { _id: ObjectId(itemID) };
+        result = await itemsCollection.findOne(query);
+      }
       res.send(result);
     });
     app.delete("/item", async (req, res) => {
