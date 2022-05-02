@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const app = express();
@@ -8,6 +9,23 @@ const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+function verifyJwtToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).send({ message: "Unauthorized Access" });
+  }
+  const jwtAccessToken = authHeader.split(" ")[1];
+  // // console.log(jwtAccessToken);
+  jwt.verify(jwtAccessToken, process.env.JWT_ACCESSTOKEN, (error, decoded) => {
+    if (error) {
+      return res.status(403).send({ message: "Forbidden Access" });
+    }
+    // console.log("decoded", decoded);
+    req.decoded = decoded;
+    next();
+  });
+}
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.s0z2b.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
@@ -20,6 +38,14 @@ async function run() {
   try {
     await client.connect();
     const itemsCollection = client.db("techArchive").collection("items");
+
+    app.post("/getJWTtoken", async (req, res) => {
+      const user = req.body;
+      const jwtAccessToken = jwt.sign(user, process.env.JWT_ACCESSTOKEN, {
+        expiresIn: "1d",
+      });
+      res.send({ jwtAccessToken });
+    });
 
     app.get("/items", async (req, res) => {
       const numberOfItem = parseInt(req.query.number);
@@ -52,20 +78,24 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/item", async (req, res) => {
+    app.get("/item", verifyJwtToken, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      // console.log("test", decodedEmail);
+      // return;
       const userEmail = req.query.email;
-      const itemID = req.query.id;
-      let query;
-      let result;
-      if (userEmail) {
-        query = { creater: userEmail };
+      if (userEmail === decodedEmail) {
+        const query = { creater: userEmail };
         const cursor = itemsCollection.find(query);
-        result = await cursor.toArray();
+        const result = await cursor.toArray();
+        res.send(result);
+      } else {
+        res.status(403).send({ message: "Forbidden Access" });
       }
-      if (itemID) {
-        query = { _id: ObjectId(itemID) };
-        result = await itemsCollection.findOne(query);
-      }
+    });
+    app.get("/inventory", async (req, res) => {
+      const itemID = req.query.id;
+      const query = { _id: ObjectId(itemID) };
+      const result = await itemsCollection.findOne(query);
       res.send(result);
     });
     app.delete("/item", async (req, res) => {
