@@ -38,6 +38,7 @@ async function run() {
   try {
     await client.connect();
     const itemsCollection = client.db("techArchive").collection("items");
+    const reviewsCollection = client.db("techArchive").collection("reviews");
 
     app.post("/getJWTtoken", async (req, res) => {
       const user = req.body;
@@ -102,6 +103,12 @@ async function run() {
       const itemId = req.query.id;
       const query = { _id: ObjectId(itemId) };
       const result = await itemsCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.post("/review", async (req, res) => {
+      const review = req.body;
+      const result = await reviewsCollection.insertOne(review);
       res.send(result);
     });
   } finally {
