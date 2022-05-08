@@ -12,7 +12,7 @@ Live Site Link: [https://tech-archive.web.app/](https://tech-archive.web.app/)
 
 Tech Archive is an electronic product inventory management system. It's useful for keeping track of inventory. Users can add new products. Each item's quantity can be reduced by delivery and increased by restocking. The manage items page allows users to manage the items. On the my items page, users can see the products they've added. Items can also be removed from the manage inventory and my items page.
 
-## Site Features
+## Features
 
 1. Add items POST route.
 2. Get items GET route.
