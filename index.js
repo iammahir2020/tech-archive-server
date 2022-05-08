@@ -49,14 +49,14 @@ async function run() {
     });
 
     app.get("/items", async (req, res) => {
-      const numberOfItem = parseInt(req.query.number);
-      let cursor;
+      // const numberOfItem = parseInt(req.query.number);
+      // let cursor;
       const query = {};
-      if (numberOfItem) {
-        cursor = itemsCollection.find(query).limit(numberOfItem);
-      } else {
-        cursor = itemsCollection.find(query);
-      }
+      // if (numberOfItem) {
+      //   cursor = itemsCollection.find(query).limit(numberOfItem);
+      // } else {
+      const cursor = itemsCollection.find(query);
+      // }
       const result = await cursor.toArray();
       res.send(result);
     });
