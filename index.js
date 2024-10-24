@@ -27,7 +27,7 @@ function verifyJwtToken(req, res, next) {
   });
 }
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.s0z2b.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.zvh8daj.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -127,7 +127,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-  res.send("Assignment 11 BackEnd Server is LIVE!");
+  res.send("Tech Archives Server is LIVE!");
 });
 
 app.listen(port, () => {
